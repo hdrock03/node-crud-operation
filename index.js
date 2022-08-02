@@ -1,8 +1,19 @@
-const Joi = require('joi') // it is class
+const Joi = require('joi')
+const helmet = require('helmet') 
+const morgan = require('morgan')
+const logger = require('./logger')
 const express = require('express') 
 const app = express();
 
 app.use(express.json()) // middleware 
+app.use(express.urlencoded({extended : true}))
+app.use(express.static('public'));
+app.use(helmet());
+app.use(morgan('tiny'))
+
+app.use(logger)
+
+
 
 const courses = [
     {id:1, name:'course1'},
@@ -19,18 +30,7 @@ app.get('/api/courses', (req,res)=>{
 })
 
 app.post('/api/courses',(req, res) => {
-    // const schema = Joi.object({
-    //     name: Joi.string().min(3).required() // joi name ek string hga jime min 3 character hga aur wo required hga
-
-    // })
-
-    // const {error}= schema.validate(req.body); 
-
-    // if(error) {
-    //     res.status(400).send(error.details[0].message)
-    //     return;
-    // }
-
+  
     const {error} = validateCourse(req.body)
     console.log(error);
     if(error) {
